@@ -1,6 +1,5 @@
 import { Package, packagesFromOfflineCarrier } from "../package";
 import { getPreferenceValues, Cache } from "@raycast/api";
-import fetch from "node-fetch";
 import { randomUUID } from "node:crypto";
 import { Delivery } from "../delivery";
 

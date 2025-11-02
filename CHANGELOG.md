@@ -1,5 +1,9 @@
 # Delivery Tracker Changelog
 
+## TBD {PR_MERGE_DATE}
+
+- Fixed [#20613](https://github.com/raycast/extensions/issues/20613)
+
 ## [Manually Mark as Delivered and Delete All Delivered Deliveries] - 2025-04-10
 
 Deliveries that are not remotely tracked can now be manually marked as delivered.  They will no longer be automatically

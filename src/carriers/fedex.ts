@@ -1,6 +1,5 @@
 import { Package, packagesFromOfflineCarrier } from "../package";
 import { Cache, getPreferenceValues } from "@raycast/api";
-import fetch from "node-fetch";
 import { Delivery } from "../delivery";
 
 const cache = new Cache();
