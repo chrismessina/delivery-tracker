@@ -8,16 +8,22 @@ import ShowDetailsView from "./views/ShowDetailsView";
 import EditDeliveryView from "./views/EditDeliveryView";
 import { useDeliveries } from "./hooks/useDeliveries";
 import { refreshTracking } from "./services/trackingService";
-import { deleteDelivery, deleteDeliveredDeliveries, toggleDeliveryDelivered, atLeastOneDeliveryIsFullyDelivered, archiveDelivery } from "./services/deliveryService";
-import { groupDeliveriesByStatus, sortTracking } from "./services/sortingService";
+import {
+  deleteDelivery,
+  deleteDeliveredDeliveries,
+  toggleDeliveryDelivered,
+  atLeastOneDeliveryIsFullyDelivered,
+  archiveDelivery,
+} from "./services/deliveryService";
+import { groupDeliveriesByStatus } from "./services/sortingService";
 import { usePackages } from "./hooks/usePackages";
+import { PackageMap } from "./types/package";
 
 export default function TrackDeliveriesCommand() {
   const { activeDeliveries, setDeliveries, isLoading } = useDeliveries();
   const { packages, setPackages } = usePackages();
   const [trackingIsLoading, setTrackingIsLoading] = useState(false);
   const [selectedCarrier, setSelectedCarrier] = useState<string>("all");
-  const [showArchived, setShowArchived] = useState(false);
   const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
@@ -27,7 +33,8 @@ export default function TrackDeliveriesCommand() {
   // Filter deliveries
   const filteredDeliveries = activeDeliveries.filter((delivery) => {
     const matchesCarrier = selectedCarrier === "all" || delivery.carrier === selectedCarrier;
-    const matchesSearch = searchText === "" || 
+    const matchesSearch =
+      searchText === "" ||
       delivery.name.toLowerCase().includes(searchText.toLowerCase()) ||
       delivery.trackingNumber.toLowerCase().includes(searchText.toLowerCase());
     return matchesCarrier && matchesSearch;
@@ -35,7 +42,6 @@ export default function TrackDeliveriesCommand() {
 
   // Group deliveries by status
   const grouped = groupDeliveriesByStatus(filteredDeliveries, packages);
-  const sortedDeliveries = sortTracking(filteredDeliveries, packages);
 
   return (
     <List
@@ -43,19 +49,10 @@ export default function TrackDeliveriesCommand() {
       searchBarPlaceholder="Search deliveries by name or tracking number..."
       onSearchTextChange={setSearchText}
       searchBarAccessory={
-        <List.Dropdown
-          tooltip="Filter by Carrier"
-          value={selectedCarrier}
-          onChange={setSelectedCarrier}
-        >
+        <List.Dropdown tooltip="Filter by Carrier" value={selectedCarrier} onChange={setSelectedCarrier}>
           <List.Dropdown.Item title="All Carriers" value="all" icon={Icon.List} />
           {Array.from(carriers.values()).map((carrier) => (
-            <List.Dropdown.Item
-              key={carrier.id}
-              title={carrier.name}
-              value={carrier.id}
-              icon={carrier.icon}
-            />
+            <List.Dropdown.Item key={carrier.id} title={carrier.name} value={carrier.id} icon={carrier.icon} />
           ))}
         </List.Dropdown>
       }
@@ -76,14 +73,21 @@ export default function TrackDeliveriesCommand() {
           }
           actions={
             <ActionPanel>
-              <TrackNewDeliveryAction deliveries={activeDeliveries} setDeliveries={setDeliveries} isLoading={isLoading} />
+              <TrackNewDeliveryAction
+                deliveries={activeDeliveries}
+                setDeliveries={setDeliveries}
+                isLoading={isLoading}
+              />
             </ActionPanel>
           }
         />
       ) : (
         <>
           {grouped.arrivingToday.length > 0 && (
-            <List.Section title="Arriving Today" subtitle={`${grouped.arrivingToday.length} package${grouped.arrivingToday.length > 1 ? 's' : ''}`}>
+            <List.Section
+              title="Arriving Today"
+              subtitle={`${grouped.arrivingToday.length} package${grouped.arrivingToday.length > 1 ? "s" : ""}`}
+            >
               {grouped.arrivingToday.map((delivery) => (
                 <DeliveryListItem
                   key={delivery.id}
@@ -98,7 +102,10 @@ export default function TrackDeliveriesCommand() {
             </List.Section>
           )}
           {grouped.inTransit.length > 0 && (
-            <List.Section title="In Transit" subtitle={`${grouped.inTransit.length} package${grouped.inTransit.length > 1 ? 's' : ''}`}>
+            <List.Section
+              title="In Transit"
+              subtitle={`${grouped.inTransit.length} package${grouped.inTransit.length > 1 ? "s" : ""}`}
+            >
               {grouped.inTransit.map((delivery) => (
                 <DeliveryListItem
                   key={delivery.id}
@@ -113,7 +120,10 @@ export default function TrackDeliveriesCommand() {
             </List.Section>
           )}
           {grouped.delivered.length > 0 && (
-            <List.Section title="Delivered" subtitle={`${grouped.delivered.length} package${grouped.delivered.length > 1 ? 's' : ''}`}>
+            <List.Section
+              title="Delivered"
+              subtitle={`${grouped.delivered.length} package${grouped.delivered.length > 1 ? "s" : ""}`}
+            >
               {grouped.delivered.map((delivery) => (
                 <DeliveryListItem
                   key={delivery.id}
@@ -128,7 +138,10 @@ export default function TrackDeliveriesCommand() {
             </List.Section>
           )}
           {grouped.unknown.length > 0 && (
-            <List.Section title="Unknown Status" subtitle={`${grouped.unknown.length} package${grouped.unknown.length > 1 ? 's' : ''}`}>
+            <List.Section
+              title="Unknown Status"
+              subtitle={`${grouped.unknown.length} package${grouped.unknown.length > 1 ? "s" : ""}`}
+            >
               {grouped.unknown.map((delivery) => (
                 <DeliveryListItem
                   key={delivery.id}
@@ -157,10 +170,10 @@ function DeliveryListItem({
   isLoading,
 }: {
   delivery: Delivery;
-  packages: any;
+  packages: PackageMap;
   deliveries: Delivery[];
   setDeliveries: (value: Delivery[]) => Promise<void>;
-  setPackages: any;
+  setPackages: React.Dispatch<React.SetStateAction<PackageMap>>;
   isLoading: boolean;
 }) {
   return (
@@ -173,11 +186,11 @@ function DeliveryListItem({
       accessories={[
         delivery.notes ? { icon: Icon.Document, tooltip: delivery.notes } : {},
         { text: deliveryStatus(packages[delivery.id]?.packages) },
-        { 
+        {
           icon: carriers.get(delivery.carrier)?.icon,
           text: { value: carriers.get(delivery.carrier)?.name, color: carriers.get(delivery.carrier)?.color },
         },
-      ].filter(acc => Object.keys(acc).length > 0)}
+      ].filter((acc) => Object.keys(acc).length > 0)}
       actions={
         <ActionPanel>
           <ActionPanel.Section>
@@ -213,9 +226,7 @@ function DeliveryListItem({
             />
             {!carriers.get(delivery.carrier)?.ableToTrackRemotely() && (
               <Action
-                title={
-                  delivery.manualMarkedAsDelivered ? "Manually Mark as Undelivered" : "Manually Mark as Delivered"
-                }
+                title={delivery.manualMarkedAsDelivered ? "Manually Mark as Undelivered" : "Manually Mark as Delivered"}
                 icon={delivery.manualMarkedAsDelivered ? Icon.CircleProgress : Icon.CheckCircle}
                 shortcut={{ modifiers: ["cmd"], key: "d" }}
                 style={Action.Style.Regular}

@@ -120,11 +120,7 @@ export default function EditDeliveryView({
           {...itemProps.manualDeliveryDate}
         />
       )}
-      <Form.TextArea
-        title="Notes"
-        placeholder="Optional notes about this delivery"
-        {...itemProps.notes}
-      />
+      <Form.TextArea title="Notes" placeholder="Optional notes about this delivery" {...itemProps.notes} />
     </Form>
   );
 }

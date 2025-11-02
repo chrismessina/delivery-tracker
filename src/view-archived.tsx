@@ -6,14 +6,15 @@ import carriers from "./carriers";
 import ShowDetailsView from "./views/ShowDetailsView";
 
 export default function ViewArchivedCommand() {
-  const { archivedDeliveries, setDeliveries, isLoading } = useDeliveries();
+  const { archivedDeliveries, activeDeliveries, setDeliveries, isLoading } = useDeliveries();
   const { packages } = usePackages();
 
   const unarchiveDelivery = async (id: string) => {
     const delivery = archivedDeliveries.find((d) => d.id === id);
     if (!delivery) return;
 
-    const allDeliveries = [...archivedDeliveries];
+    // Combine active and archived deliveries to preserve all entries
+    const allDeliveries = [...activeDeliveries, ...archivedDeliveries];
     const index = allDeliveries.findIndex((d) => d.id === id);
     if (index !== -1) {
       allDeliveries[index] = { ...allDeliveries[index], archived: false, archivedAt: undefined };
@@ -41,7 +42,7 @@ export default function ViewArchivedCommand() {
                 ? { text: `Archived ${delivery.archivedAt.toLocaleDateString()}`, icon: Icon.Clock }
                 : {},
               { text: deliveryStatus(packages[delivery.id]?.packages) },
-              { 
+              {
                 icon: carriers.get(delivery.carrier)?.icon,
                 text: { value: carriers.get(delivery.carrier)?.name, color: carriers.get(delivery.carrier)?.color },
               },
@@ -58,9 +59,7 @@ export default function ViewArchivedCommand() {
                   icon={Icon.ArrowCounterClockwise}
                   onAction={() => unarchiveDelivery(delivery.id)}
                 />
-                <Action.OpenInBrowser
-                  url={carriers.get(delivery.carrier)?.urlToTrackingWebpage(delivery) ?? ""}
-                />
+                <Action.OpenInBrowser url={carriers.get(delivery.carrier)?.urlToTrackingWebpage(delivery) ?? ""} />
               </ActionPanel>
             }
           />

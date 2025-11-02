@@ -1,7 +1,7 @@
 import { MenuBarExtra, open, Icon, Color } from "@raycast/api";
 import { useDeliveries } from "./hooks/useDeliveries";
 import { usePackages } from "./hooks/usePackages";
-import { deliveryIcon, deliveryStatus } from "./package";
+import { deliveryStatus } from "./package";
 import { groupDeliveriesByStatus } from "./services/sortingService";
 import carriers from "./carriers";
 

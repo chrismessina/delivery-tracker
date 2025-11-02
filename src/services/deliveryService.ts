@@ -155,10 +155,7 @@ export async function archiveDelivery(
   });
 }
 
-export function atLeastOneDeliveryIsFullyDelivered(
-  deliveries: Delivery[] | undefined,
-  packages: PackageMap,
-): boolean {
+export function atLeastOneDeliveryIsFullyDelivered(deliveries: Delivery[] | undefined, packages: PackageMap): boolean {
   if (!deliveries || !packages) {
     return false;
   }

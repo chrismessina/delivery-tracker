@@ -63,7 +63,6 @@ export default function TrackNewDeliveryView({
     },
   });
 
-
   const showDatePickerIfNecessary = async (carrierId: string) => {
     const carrier = carriers.get(carrierId);
 
@@ -128,11 +127,7 @@ export default function TrackNewDeliveryView({
           {...itemProps.manualDeliveryDate}
         />
       )}
-      <Form.TextArea
-        title="Notes"
-        placeholder="Optional notes about this delivery"
-        {...itemProps.notes}
-      />
+      <Form.TextArea title="Notes" placeholder="Optional notes about this delivery" {...itemProps.notes} />
     </Form>
   );
 }
