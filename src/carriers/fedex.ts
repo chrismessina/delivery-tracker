@@ -1,6 +1,8 @@
-import { Package, packagesFromOfflineCarrier } from "../package";
-import { Cache, getPreferenceValues } from "@raycast/api";
-import { Delivery } from "../delivery";
+import { packagesFromOfflineCarrier } from "../package";
+import { getPreferenceValues, Cache } from "@raycast/api";
+import { randomUUID } from "crypto";
+import { Package } from "../types/package";
+import { Delivery } from "../types/delivery";
 
 const cache = new Cache();
 const cacheKey = "fedexLogin";
