@@ -129,8 +129,6 @@ export function groupDeliveriesByStatus(
   };
 
   for (const delivery of deliveries) {
-    // Skip if all limits reached
-    if (checkLimits()) break;
 
     const deliveryPackages = packages[delivery.id]?.packages ?? [];
 
