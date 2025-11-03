@@ -40,7 +40,7 @@ export class TrackingError extends Error {
 /**
  * Categorizes an unknown error into a TrackingError
  */
-export function categorizeError(error: unknown, deliveryName: string): TrackingError {
+export function categorizeError(error: unknown): TrackingError {
   // Already a TrackingError
   if (error instanceof TrackingError) {
     return error;
